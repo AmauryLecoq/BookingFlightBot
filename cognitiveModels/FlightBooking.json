@@ -7,7 +7,7 @@
   "tokenizerVersion": "1.0.0",
   "intents": [
     {
-      "name": "Book flight"
+      "name": "Book Flight"
     },
     {
       "name": "Cancel"

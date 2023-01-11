@@ -3,7 +3,11 @@
 # Licensed under the MIT License.
 """Configuration for the bot."""
 
+from dotenv import load_dotenv
+
 import os
+
+load_dotenv()
 
 
 class DefaultConfig:
