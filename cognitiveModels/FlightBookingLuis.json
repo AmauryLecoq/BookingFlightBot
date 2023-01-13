@@ -243,6 +243,141 @@
           "endPos": 21
         }
       ]
+    },
+    {
+      "text": "we can depart from toronto.",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "or_city",
+          "startPos": 19,
+          "endPos": 26
+        }
+      ]
+    },
+    {
+      "text": "hmm what options would i have out of toronto?",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "or_city",
+          "startPos": 37,
+          "endPos": 44
+        }
+      ]
+    },
+    {
+      "text": "do you have anything for san antonio as a destination?",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "dst_city",
+          "startPos": 25,
+          "endPos": 36
+        }
+      ]
+    },
+    {
+      "text": "that sounds great. 1:00 am return on sunday august 28th is very early in the morning... ",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "end_date",
+          "startPos": 37,
+          "endPos": 55
+        }
+      ]
+    },
+    {
+      "text": "i do not have any dates in mind. i would like to spend as much time in denver as my budget will allow.",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "dst_city",
+          "startPos": 71,
+          "endPos": 77
+        }
+      ]
+    },
+    {
+      "text": "i need to back by the 31st.",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "end_date",
+          "startPos": 22,
+          "endPos": 26
+        }
+      ]
+    },
+    {
+      "text": "i\u2019m from calgary.",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "or_city",
+          "startPos": 9,
+          "endPos": 16
+        }
+      ]
+    },
+    {
+      "text": "i'm looking for a trip to gotham city leaving from kakariko village on saturday, august 13, 2016. 3 adults for no more than $2400 usd.",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "dst_city",
+          "startPos": 26,
+          "endPos": 37
+        },
+        {
+          "entity": "or_city",
+          "startPos": 51,
+          "endPos": 67
+        },
+        {
+          "entity": "str_date",
+          "startPos": 71,
+          "endPos": 96
+        },
+        {
+          "entity": "budget",
+          "startPos": 124,
+          "endPos": 133
+        }
+      ]
+    },
+    {
+      "text": "i'd like to adjust the departure city to caprica.",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "or_city",
+          "startPos": 41,
+          "endPos": 48
+        }
+      ]
+    },
+    {
+      "text": "the dates cannot be changed. how about going to theed with 14 adults, leaving from kakariko village, on a budget of $2900?",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "dst_city",
+          "startPos": 48,
+          "endPos": 53
+        },
+        {
+          "entity": "or_city",
+          "startPos": 83,
+          "endPos": 99
+        },
+        {
+          "entity": "budget",
+          "startPos": 116,
+          "endPos": 121
+        }
+      ]
     }
   ],
   "versionId": "0.1",

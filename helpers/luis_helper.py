@@ -9,9 +9,7 @@ from booking_details import BookingDetails
 
 
 class Intent(Enum):
-    BOOK_FLIGHT = "Book_flight"
-    CANCEL = "Cancel"
-    GET_WEATHER = "GetWeather"
+    BOOK_FLIGHT = "BookFlight"
     NONE_INTENT = "NoneIntent"
 
 
