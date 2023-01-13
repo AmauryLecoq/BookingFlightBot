@@ -21,7 +21,7 @@ def get_turn_entities(data, index, ls_entities):
         json_part = {}
         txt = conversation["text"].lower()
         json_part["text"] = txt
-        json_part["intentName"] = "BookFlight"
+        json_part["intent"] = "BookFlight"
         # Nous n'utiliserons que ce qu'ont
         # écrit les utilisateurs
         if conversation["author"] == "user":
@@ -38,15 +38,15 @@ def get_turn_entities(data, index, ls_entities):
                                 if val != "-1":
                                     startCharIndex = txt.index(val)
                                     endCharIndex = startCharIndex + len(val)
-                                    entity["entityName"] = key
-                                    entity["startCharIndex"] = startCharIndex
-                                    entity["endCharIndex"] = endCharIndex
+                                    entity["entity"] = key
+                                    entity["startPos"] = startCharIndex
+                                    entity["endPos"] = endCharIndex
                                     entities.append(entity)
-                json_part["entityLabels"] = entities
+                json_part["entities"] = entities
                 
         if (len(json_part)>0):
-            if "entityLabels" in json_part.keys():
-                if len(json_part["entityLabels"])>0:
+            if "entities" in json_part.keys():
+                if len(json_part["entities"])>0:
                     luis_data.append(json_part)
     return luis_data
 

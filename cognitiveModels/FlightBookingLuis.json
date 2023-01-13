@@ -1,0 +1,259 @@
+{
+  "luis_schema_version": "7.0.0",
+  "intents": [
+    {
+      "name": "BookFlight",
+      "features": []
+    },
+    {
+      "name": "None",
+      "features": []
+    }
+  ],
+  "entities": [
+    {
+      "name": "budget",
+      "children": [],
+      "roles": [],
+      "features": [
+        {
+          "modelName": "ordinalV2",
+          "isRequired": false
+        }
+      ]
+    },
+    {
+      "name": "dst_city",
+      "children": [],
+      "roles": [],
+      "features": [
+        {
+          "modelName": "geographyV2",
+          "isRequired": false
+        }
+      ]
+    },
+    {
+      "name": "end_date",
+      "children": [],
+      "roles": [],
+      "features": [
+        {
+          "modelName": "datetimeV2",
+          "isRequired": false
+        }
+      ]
+    },
+    {
+      "name": "or_city",
+      "children": [],
+      "roles": [],
+      "features": [
+        {
+          "modelName": "geographyV2",
+          "isRequired": false
+        }
+      ]
+    },
+    {
+      "name": "str_date",
+      "children": [],
+      "roles": [],
+      "features": [
+        {
+          "modelName": "datetimeV2",
+          "isRequired": false
+        }
+      ]
+    }
+  ],
+  "hierarchicals": [],
+  "composites": [],
+  "closedLists": [],
+  "prebuiltEntities": [
+    {
+      "name": "datetimeV2",
+      "roles": []
+    },
+    {
+      "name": "geographyV2",
+      "roles": []
+    },
+    {
+      "name": "ordinalV2",
+      "roles": []
+    }
+  ],
+  "utterances": [
+    {
+      "text": "i'd like to book a trip to atlantis from caprica on saturday, august 13, 2016 for 8 adults. i have a tight budget of 1700.",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "dst_city",
+          "startPos": 27,
+          "endPos": 35
+        },
+        {
+          "entity": "or_city",
+          "startPos": 41,
+          "endPos": 48
+        },
+        {
+          "entity": "str_date",
+          "startPos": 52,
+          "endPos": 77
+        },
+        {
+          "entity": "budget",
+          "startPos": 117,
+          "endPos": 121
+        }
+      ]
+    },
+    {
+      "text": "yes, how about going to neverland from caprica on august 13, 2016 for 5 adults. for this trip, my budget would be 1900.",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "dst_city",
+          "startPos": 24,
+          "endPos": 33
+        },
+        {
+          "entity": "budget",
+          "startPos": 114,
+          "endPos": 118},
+        {
+          "entity": "or_city",
+          "startPos": 39,
+          "endPos": 46
+        },
+        {
+          "entity": "str_date",
+          "startPos": 50,
+          "endPos": 65
+        }
+      ]
+    },
+    {
+      "text": "i have no flexibility for dates... but i can leave from atlantis rather than caprica. how about that?",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "or_city",
+          "startPos": 77,
+          "endPos": 84
+        }
+      ]
+    },
+    {
+      "text": "what about a trip from gotham city to neverland for the same budget?",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "dst_city",
+          "startPos": 38,
+          "endPos": 47
+        },
+        {
+          "entity": "or_city",
+          "startPos": 23,
+          "endPos": 34
+        }
+      ]
+    },
+    {
+      "text": "would any packages to mos eisley be available if i increase my budget to $2500?", 
+      "intent": "BookFlight", 
+      "entities": [
+        {
+          "entity": "dst_city",
+          "startPos": 22,
+          "endPos": 32
+        },
+        {
+          "entity": "budget",
+          "startPos": 73,
+          "endPos": 78
+        }
+      ]
+    },
+    {
+      "text": "you know what, i'd like to try and visit neverland.",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "dst_city",
+          "startPos": 41,
+          "endPos": 50
+        }
+      ]
+    },
+    {
+      "text": "do you have any trips from gotham city to kobe for my original budget of $2100?",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "dst_city",
+          "startPos": 42,
+          "endPos": 46
+        },
+        {
+          "entity": "budget",
+          "startPos": 73,
+          "endPos": 78
+        },
+        {
+          "entity": "or_city",
+          "startPos": 27,
+          "endPos": 38
+        }
+      ]
+    },
+    {
+      "text": "no, that's too far for me. i need a flight that leaves from birmingham.",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "or_city",
+          "startPos": 60,
+          "endPos": 70
+        }
+      ]
+    },
+    {
+      "text": "yes i do, it is around $2200.",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "budget",
+          "startPos": 23,
+          "endPos": 28
+        }
+      ]
+    },
+    {
+      "text": "we are from neverland.",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "or_city",
+          "startPos": 12,
+          "endPos": 21
+        }
+      ]
+    }
+  ],
+  "versionId": "0.1",
+  "name": "FlightBookingLuisBlank",
+  "desc": "",
+  "culture": "en-us",
+  "tokenizerVersion": "1.0.0",
+  "patternAnyEntities": [],
+  "regex_entities": [],
+  "phraselists": [],
+  "regex_features": [],
+  "patterns": [],
+  "settings": []
+}
