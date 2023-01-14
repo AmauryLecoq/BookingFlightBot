@@ -96,8 +96,8 @@ class MainDialog(ComponentDialog):
             # Run the BookingDialog giving it whatever details we have from the LUIS call.
             return await step_context.begin_dialog(self._booking_dialog_id, luis_result)
 
-        if intent == Intent.GET_WEATHER.value:
-            get_weather_text = "TODO: get weather flow here"
+        if intent == Intent.NONE_INTENT.value:
+            get_weather_text = "TODO: none intent flow here"
             get_weather_message = MessageFactory.text(
                 get_weather_text, get_weather_text, InputHints.ignoring_input
             )
@@ -125,7 +125,7 @@ class MainDialog(ComponentDialog):
             # If the call to the booking service was successful tell the user.
             # time_property = Timex(result.travel_date)
             # travel_date_msg = time_property.to_natural_language(datetime.now())
-            msg_txt = f"I have you booked to {result.destination} from {result.origin} on {result.travel_date}"
+            msg_txt = f"I have you booked to {result.destination} from {result.origin} on {result.start_date} and returning on {result.end_date}"
             message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
             await step_context.context.send_activity(message)
 
