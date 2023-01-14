@@ -1,5 +1,4 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License.
+
 from enum import Enum
 from typing import Dict
 from botbuilder.ai.luis import LuisRecognizer
@@ -53,46 +52,74 @@ class LuisHelper:
                 result = BookingDetails()
 
                 # We need to get the result from the LUIS JSON which at every level returns an array.
-                to_entities = recognizer_result.entities.get("$instance", {}).get(
-                    "To", []
-                )
-                if len(to_entities) > 0:
-                    if recognizer_result.entities.get("To", [{"$instance": {}}])[0][
-                        "$instance"
-                    ]:
-                        result.destination = to_entities[0]["text"].capitalize()
+                # Get the destination city
+                dst_city_entities = recognizer_result.entities.get("dst_city", [])
+                if len(dst_city_entities) > 0:
+                    if recognizer_result.entities.get("dst_city", [])[0]:
+                        result.destination = dst_city_entities[0].capitalize()
+                    
                     else:
-                        result.unsupported_airports.append(
-                            to_entities[0]["text"].capitalize()
-                        )
+                        result.destination = None
+                
+                else :
+                    result.destination = None
 
-                from_entities = recognizer_result.entities.get("$instance", {}).get(
-                    "From", []
-                )
-                if len(from_entities) > 0:
-                    if recognizer_result.entities.get("From", [{"$instance": {}}])[0][
-                        "$instance"
-                    ]:
-                        result.origin = from_entities[0]["text"].capitalize()
+
+                # Get the origin city
+                or_city_entities = recognizer_result.entities.get("or_city", [])
+                if len(dst_city_entities) > 0:
+                    if recognizer_result.entities.get("or_city", [])[0]:
+                        result.origin = or_city_entities[0].capitalize()
+                    
                     else:
-                        result.unsupported_airports.append(
-                            from_entities[0]["text"].capitalize()
-                        )
+                        result.origin = None
+                
+                else :
+                    result.origin = None
 
                 # This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop
                 # the Time part. TIMEX is a format that represents DateTime expressions that include some ambiguity.
                 # e.g. missing a Year.
-                date_entities = recognizer_result.entities.get("datetime", [])
-                if date_entities:
-                    timex = date_entities[0]["timex"]
+                # Get the Start date of the trip
+                str_date_entities = recognizer_result.entities.get("str_date", [])
+                if str_date_entities:
+                    timex = str_date_entities[0]["timex"]
 
                     if timex:
                         datetime = timex[0].split("T")[0]
 
-                        result.travel_date = datetime
+                        result.start_date = datetime
 
                 else:
-                    result.travel_date = None
+                    result.start_date = None
+                
+                # Get the Return date of the trip
+                
+                end_date_entities = recognizer_result.entities.get("$instance", {}).get(
+                    "end_date", []
+                )
+
+                if len(end_date_entities) > 0:
+                    if recognizer_result.entities.get("end_date", [])[0][
+                        "$instance"
+                    ]:
+                        result.end_date = end_date_entities[0]["text"].capitalize()
+                    else:
+                        result.end_date = None
+                else:
+                    result.end_date = None
+
+                """if end_date_entities:
+                    timex = end_date_entities[0]["timex"]
+
+                    if timex:
+                        datetime = timex[0].split("T")[0]
+
+                        result.end_date = datetime"""
+
+                # Get the budget for the trip
+
+
 
         except Exception as exception:
             print(exception)
