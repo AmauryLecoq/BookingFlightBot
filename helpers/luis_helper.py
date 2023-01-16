@@ -55,7 +55,26 @@ class LuisHelper:
             if intent == Intent.BOOK_FLIGHT.value:
                 result = BookingDetails()
 
+
+
                 # We need to get the result from the LUIS JSON which at every level returns an array.
+                # We will record the prebuilt result for further use
+                # This is valid for both Datetime and geographyV2_poi
+                # This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop
+                # the Time part. TIMEX is a format that represents DateTime expressions that include some ambiguity.
+                # e.g. missing a Year.
+
+                # Check and record datetime
+
+                datetime_entities = recognizer_result.entities.get("datetime", [])
+                if len(datetime_entities) > 0:
+                    potential_dates = []
+                    # we now can get a list of all the dates included in the Luis trace
+                    for i in range(len(datetime_entities)):
+                        if datetime_entities[i]["type"] == 'date':
+                            new_date = datetime_entities[i]["timex"][0]
+                            potential_dates.append(new_date)
+
                 # Get the destination city
                 dst_city_entities = recognizer_result.entities.get("dst_city", [])
                 if len(dst_city_entities) > 0:
@@ -99,7 +118,7 @@ class LuisHelper:
                     else:
                         result.start_date = None
                 else:
-                    result.start_date = None
+                    result.start_date = min(potential_dates)
                 
                 # Get the Return date of the trip from Luis
                 end_date_entities = recognizer_result.entities.get("end_date", [])
@@ -116,15 +135,10 @@ class LuisHelper:
                     else:
                         result.end_date = None
                 else:
-                    result.end_date = None
+                    result.end_date = max(potential_dates)
 
 
-                # It is possible that ML entities is note recognize but that luis find PreBuild Entities
-                # This is valid for both Town/country and Time
-                # This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop
-                # the Time part. TIMEX is a format that represents DateTime expressions that include some ambiguity.
-                # e.g. missing a Year.
-                # Get the Start date of the trip
+                
 
 
                 """if end_date_entities:
