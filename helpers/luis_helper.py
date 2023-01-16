@@ -6,6 +6,10 @@ from botbuilder.core import IntentScore, TopIntent, TurnContext
 
 from booking_details import BookingDetails
 
+# Package to help with Luis entities recognition
+from recognizers_date_time import DateTimeRecognizer
+from recognizers_text import Culture
+
 
 class Intent(Enum):
     BOOK_FLIGHT = "BookFlight"
@@ -67,7 +71,7 @@ class LuisHelper:
 
                 # Get the origin city
                 or_city_entities = recognizer_result.entities.get("or_city", [])
-                if len(dst_city_entities) > 0:
+                if len(or_city_entities) > 0:
                     if recognizer_result.entities.get("or_city", [])[0]:
                         result.origin = or_city_entities[0].capitalize()
                     
@@ -77,37 +81,50 @@ class LuisHelper:
                 else :
                     result.origin = None
 
-                # This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop
-                # the Time part. TIMEX is a format that represents DateTime expressions that include some ambiguity.
-                # e.g. missing a Year.
-                # Get the Start date of the trip
+                # Get the Start Date of the trip from Luis
+                obj = DateTimeRecognizer(Culture.English)
+                model = obj.get_datetime_model()
                 str_date_entities = recognizer_result.entities.get("str_date", [])
-                if str_date_entities:
-                    timex = str_date_entities[0]["timex"]
-
-                    if timex:
-                        datetime = timex[0].split("T")[0]
-
-                        result.start_date = datetime
-
+                # As this might contains unformatted date/time, we will the recognozer to transform it
+                
+                if len(str_date_entities)>0:
+                    if recognizer_result.entities.get("str_date", [])[0]:
+                        str_date = recognizer_result.entities.get("str_date", [])[0]
+                        recog_date = model.parse(str_date)
+                        for resolution in recog_date[0].resolution["values"]:
+                            if "timex" in resolution:
+                                date = resolution["timex"]
+                                result.start_date = date
+                                break
+                    else:
+                        result.start_date = None
                 else:
                     result.start_date = None
                 
-                # Get the Return date of the trip
-                
-                end_date_entities = recognizer_result.entities.get("$instance", {}).get(
-                    "end_date", []
-                )
-
-                if len(end_date_entities) > 0:
-                    if recognizer_result.entities.get("end_date", [])[0][
-                        "$instance"
-                    ]:
-                        result.end_date = end_date_entities[0]["text"].capitalize()
+                # Get the Return date of the trip from Luis
+                end_date_entities = recognizer_result.entities.get("end_date", [])
+                # As this might contains unformatted date/time, we will the recognozer to transform it
+                if len(end_date_entities)>0:
+                    if recognizer_result.entities.get("end_date", [])[0]:
+                        end_date = recognizer_result.entities.get("end_date", [])[0]
+                        recog_date = model.parse(end_date)
+                        for resolution in recog_date[0].resolution["values"]:
+                            if "timex" in resolution:
+                                date = resolution["timex"]
+                                result.end_date = date
+                                break
                     else:
                         result.end_date = None
                 else:
                     result.end_date = None
+
+
+
+                # This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop
+                # the Time part. TIMEX is a format that represents DateTime expressions that include some ambiguity.
+                # e.g. missing a Year.
+                # Get the Start date of the trip
+
 
                 """if end_date_entities:
                     timex = end_date_entities[0]["timex"]
