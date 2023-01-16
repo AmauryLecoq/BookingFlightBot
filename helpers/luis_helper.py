@@ -119,7 +119,8 @@ class LuisHelper:
                     result.end_date = None
 
 
-
+                # It is possible that ML entities is note recognize but that luis find PreBuild Entities
+                # This is valid for both Town/country and Time
                 # This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop
                 # the Time part. TIMEX is a format that represents DateTime expressions that include some ambiguity.
                 # e.g. missing a Year.
