@@ -87,7 +87,7 @@ async def messages(req: Request) -> Response:
 
 # Implement function for bot deployment
 def init_func(argv):
-    APP = web.Application(middlewares=[bot_telemetry_middleware, aiohttp_error_middleware])
+    APP = web.Application(middlewares=[aiohttp_error_middleware])
     APP.router.add_post("/api/messages", messages)
     return APP
 
