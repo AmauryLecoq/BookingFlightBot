@@ -35,14 +35,14 @@ class BookingDialog(CancelAndHelpDialog):
                 self.start_date_step,
                 # add end date step
                 self.end_date_step,
-                # self.confirm_step,
+                self.confirm_step,
                 self.final_step,
             ],
         )
         waterfall_dialog.telemetry_client = telemetry_client
 
         self.add_dialog(text_prompt)
-        # self.add_dialog(ConfirmPrompt(ConfirmPrompt.__name__))
+        self.add_dialog(ConfirmPrompt(ConfirmPrompt.__name__))
         self.add_dialog(
             DateResolverDialog(DateResolverDialog.__name__, self.telemetry_client)
         )
