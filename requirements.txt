@@ -13,5 +13,5 @@ msrest>=0.6.10
 aiohttp
 datatypes-date-time>=1.0.0.a1
 python-dotenv
-
+opencensus-ext-azure
 

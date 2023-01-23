@@ -9,6 +9,7 @@ from booking_details import BookingDetails
 # Package to help with Luis entities recognition
 from recognizers_date_time import DateTimeRecognizer
 from recognizers_text import Culture
+from recognizers_number import NumberRecognizer
 
 
 class Intent(Enum):
@@ -101,15 +102,15 @@ class LuisHelper:
                     result.origin = None
 
                 # Get the Start Date of the trip from Luis
-                obj = DateTimeRecognizer(Culture.English)
-                model = obj.get_datetime_model()
+                date_obj = DateTimeRecognizer(Culture.English)
+                date_model = date_obj.get_datetime_model()
                 str_date_entities = recognizer_result.entities.get("str_date", [])
                 # As this might contains unformatted date/time, we will the recognozer to transform it
                 
                 if len(str_date_entities)>0:
                     if recognizer_result.entities.get("str_date", [])[0]:
                         str_date = recognizer_result.entities.get("str_date", [])[0]
-                        recog_date = model.parse(str_date)
+                        recog_date = date_model.parse(str_date)
                         for resolution in recog_date[0].resolution["values"]:
                             if "timex" in resolution:
                                 date = resolution["timex"]
@@ -126,7 +127,7 @@ class LuisHelper:
                 if len(end_date_entities)>0:
                     if recognizer_result.entities.get("end_date", [])[0]:
                         end_date = recognizer_result.entities.get("end_date", [])[0]
-                        recog_date = model.parse(end_date)
+                        recog_date = date_model.parse(end_date)
                         for resolution in recog_date[0].resolution["values"]:
                             if "timex" in resolution:
                                 date = resolution["timex"]
@@ -137,20 +138,28 @@ class LuisHelper:
                 else:
                     result.end_date = max(potential_dates)
 
-
-                
-
-
-                """if end_date_entities:
-                    timex = end_date_entities[0]["timex"]
-
-                    if timex:
-                        datetime = timex[0].split("T")[0]
-
-                        result.end_date = datetime"""
-
                 # Get the budget for the trip
-
+                budget_entities = recognizer_result.entities.get("budget", [])
+                bud_obj = NumberRecognizer(Culture.English)
+                bud_model = bud_obj.get_number_model()
+                if len(budget_entities) > 0:
+                    if recognizer_result.entities.get("budget", [])[0]:
+                        budget = recognizer_result.entities.get("budget", [])[0]
+                        recog_budget = bud_model.parse(budget)
+                        if recog_budget[0].resolution is not None:
+                            budget = f"{recog_budget[0].resolution['value']}"
+                            result.budget = budget
+                        
+                        else:
+                            result.budget = None
+                        
+                        
+                    
+                    else:
+                        result.budget = None
+                
+                else :
+                    result.budget = None
 
 
         except Exception as exception:

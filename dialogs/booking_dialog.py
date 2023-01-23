@@ -9,7 +9,8 @@ from botbuilder.dialogs.prompts import ConfirmPrompt, TextPrompt, PromptOptions
 from botbuilder.core import MessageFactory, BotTelemetryClient, NullTelemetryClient
 from .cancel_and_help_dialog import CancelAndHelpDialog
 from .date_resolver_dialog import DateResolverDialog
-
+from booking_details import BookingDetails
+from botbuilder.dialogs.choices import Choice
 
 class BookingDialog(CancelAndHelpDialog):
     """Flight booking implementation."""
@@ -35,6 +36,7 @@ class BookingDialog(CancelAndHelpDialog):
                 self.start_date_step,
                 # add end date step
                 self.end_date_step,
+                self.budget_step,
                 self.confirm_step,
                 self.final_step,
             ],
@@ -42,7 +44,10 @@ class BookingDialog(CancelAndHelpDialog):
         waterfall_dialog.telemetry_client = telemetry_client
 
         self.add_dialog(text_prompt)
-        self.add_dialog(ConfirmPrompt(ConfirmPrompt.__name__))
+        self.add_dialog(ConfirmPrompt(
+            ConfirmPrompt.__name__,
+            default_locale="en-us"
+            ))
         self.add_dialog(
             DateResolverDialog(DateResolverDialog.__name__, self.telemetry_client)
         )
@@ -122,6 +127,23 @@ class BookingDialog(CancelAndHelpDialog):
 
         return await step_context.next(booking_details.end_date)
 
+    async def budget_step(self, step_context: WaterfallStepContext
+    ) -> DialogTurnResult:
+        """Confirm the information the user has provided."""
+        booking_details = step_context.options
+        # Capture the results of the previous step
+        booking_details.end_date = step_context.result
+        if booking_details.budget is None:
+            return await step_context.prompt(
+                TextPrompt.__name__,
+                PromptOptions(
+                    prompt=MessageFactory.text("What will be your budget for this trip?")
+                ),
+            ) 
+
+        return await step_context.next(booking_details.budget)
+
+
     async def confirm_step(
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
@@ -129,27 +151,33 @@ class BookingDialog(CancelAndHelpDialog):
         booking_details = step_context.options
 
         # Capture the results of the previous step
-        booking_details.end_date = step_context.result
+        booking_details.budget = step_context.result
         msg = (
             f"Please confirm, I have you traveling to: { booking_details.destination }"
             f" from: { booking_details.origin } on: { booking_details.start_date}."
-            f" Returning on: { booking_details.end_date } with a budget of : ."
+            f" Returning on: { booking_details.end_date } with a budget of : {booking_details.budget} ."
         )
 
         # Offer a YES/NO prompt.
         return await step_context.prompt(
-            ConfirmPrompt.__name__, PromptOptions(prompt=MessageFactory.text(msg))
+            ConfirmPrompt.__name__,
+            PromptOptions(prompt=MessageFactory.text(msg)
+            )
         )
 
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Complete the interaction and end the dialog."""
         if step_context.result:
             booking_details = step_context.options
-            booking_details.end_date = step_context.result
+            #after adding confirm step
+            #booking_details.end_date = step_context.result
 
             return await step_context.end_dialog(booking_details)
-
-        return await step_context.end_dialog()
+        else:
+            # If the client says we have not properly record the data
+            # problem = we are in an infinite loop till confirmation is given
+            result = BookingDetails()
+            return await step_context.begin_dialog(BookingDialog.__name__, result)
 
     def is_ambiguous(self, timex: str) -> bool:
         """Ensure time is correct."""
