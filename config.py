@@ -25,3 +25,4 @@ class DefaultConfig:
     APPINSIGHTS_INSTRUMENTATION_KEY = os.environ.get(
         "AppInsightsInstrumentationKey", ""
     )
+    CONNECTION_STRING = f"InstrumentationKey={APPINSIGHTS_INSTRUMENTATION_KEY}"

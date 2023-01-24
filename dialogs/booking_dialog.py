@@ -11,6 +11,18 @@ from .cancel_and_help_dialog import CancelAndHelpDialog
 from .date_resolver_dialog import DateResolverDialog
 from booking_details import BookingDetails
 from botbuilder.dialogs.choices import Choice
+import logging
+from opencensus.ext.azure.log_exporter import AzureLogHandler, AzureEventHandler
+from config import DefaultConfig
+
+#To deal with warning logging
+CONFIG = DefaultConfig()
+
+connection_string = CONFIG.CONNECTION_STRING
+logger = logging.getLogger(__name__)
+logger.addHandler(AzureLogHandler(
+    connection_string='InstrumentationKey=6cba8643-2795-47fb-a6d6-201accf78f81')
+)
 
 class BookingDialog(CancelAndHelpDialog):
     """Flight booking implementation."""
@@ -176,6 +188,8 @@ class BookingDialog(CancelAndHelpDialog):
         else:
             # If the client says we have not properly record the data
             # problem = we are in an infinite loop till confirmation is given
+            line = "Invalid proposal to Client"
+            logger.warning(line)
             result = BookingDetails()
             return await step_context.begin_dialog(BookingDialog.__name__, result)
 
