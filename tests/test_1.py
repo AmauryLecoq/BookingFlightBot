@@ -39,6 +39,7 @@ from botbuilder.core.adapters import TestAdapter
 from adapter_with_error_handler import AdapterWithErrorHandler
 from flight_booking_recognizer import FlightBookingRecognizer
 
+from booking_details import BookingDetails
 
 
 class BookingDialogTest(aiounittest.AsyncTestCase):
@@ -49,10 +50,8 @@ class BookingDialogTest(aiounittest.AsyncTestCase):
             dialog_context = await dialogs.create_context(turn_context)
             results = await dialog_context.continue_dialog()
             if (results.status == DialogTurnStatus.Empty):
-                options = PromptOptions(prompt=Activity(
-                    type= ActivityTypes.message,
-                    text="what is your email adress?"))
-                await dialog_context.prompt("email_prompt", options)
+                dialog_context.options = booking_details
+                await dialog_context.begin_dialog(dialog_id, booking_details)
             elif results.status == DialogTurnStatus.Complete:
                 reply =  results.result
                 await turn_context.send_activity(reply)
@@ -63,16 +62,29 @@ class BookingDialogTest(aiounittest.AsyncTestCase):
         adapter = TestAdapter(exec_test)
         # for dialog state u need converstation state
         conv_state = ConversationState(MemoryStorage())
+        booking_details = BookingDetails()
+        dialog_id = BookingDialog.__name__
         #for dialog set u need dialoag state
         dialogs_state = conv_state.create_property("dialog_state")
 
 
 
         dialogs = DialogSet(dialogs_state)
-        dialogs.add(BookingDialog)
+        dialogs.add(BookingDialog())
         #test adapter will be use to pass all information
+        
 
-        step1 = await adapter.test("Hello", "what can I do for you?") # call adapter to ask
-        step2 = await step1.send("my email adress is amaury@live.com") # input to the adapter
-        await step2.assert_reply("amaury@live.com")
+
+        step1 = await adapter.test("Hello", "To what city would you like to travel?") # call adapter to ask
+        step2 = await step1.test("Paris", "From what city will you be travelling?") # input to the adapter
+        step3 = await step2.test("Lille", "On what date would you like to travel?")
+        step4 = await step3.test("01-01-2023", "On what date would you like to travel?")
+        step5 = await step4.test("31-01-2023", "What will be your budget for this trip?")
+        step6 = await step5.send("1000")
+
+        await step6.assert_reply(
+            f"Please confirm, I have you traveling to: Paris"
+            f" from: Lille on: 2023-01-01."
+            f" Returning on: 2023-01-31 with a budget of : 1000 ."
+            f" (1) Yes or (2) No")
             
