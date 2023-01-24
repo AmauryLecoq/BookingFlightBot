@@ -14,4 +14,5 @@ aiohttp
 datatypes-date-time>=1.0.0.a1
 python-dotenv
 opencensus-ext-azure
-
+aiounittest
+pytest

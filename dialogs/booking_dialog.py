@@ -21,7 +21,7 @@ CONFIG = DefaultConfig()
 connection_string = CONFIG.CONNECTION_STRING
 logger = logging.getLogger(__name__)
 logger.addHandler(AzureLogHandler(
-    connection_string='InstrumentationKey=6cba8643-2795-47fb-a6d6-201accf78f81')
+    connection_string=connection_string)
 )
 
 class BookingDialog(CancelAndHelpDialog):
