@@ -107,7 +107,6 @@ class BookingDialogTest(aiounittest.AsyncTestCase):
         adapter = TestAdapter(exec_test)
         # for dialog state u need converstation state
         conv_state = ConversationState(MemoryStorage())
-        booking_details = BookingDetails()
         dialog_id = MainDialog.__name__
         config = DefaultConfig()
         luis_recognizer = FlightBookingRecognizer(config)
