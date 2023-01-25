@@ -34,12 +34,12 @@ jobs:
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       - name: Test with pytest
         env:
-          APP_ID : ${{secrets.MICROSOFTAPPID}}
-          APP_PASSWORD : ${{secrets.MICROSOFTAPPPASSWORD}}
-          LUIS_APP_ID : ${{secrets.LUISAPPID}}
-          LUIS_API_KEY : ${{secrets.LUISAPIKEY}}
-          LUIS_API_HOST_NAME : ${{secrets.LUISAPIHOSTNAME}}
-          APPINSIGHTS_INSTRUMENTATION_KEY : ${{secrets.APPINSIGHTSINSTRUMENTATIONKEY}}
+          MicrosoftAppId : ${{secrets.MICROSOFTAPPID}}
+          MicrosoftAppPassword : ${{secrets.MICROSOFTAPPPASSWORD}}
+          LuisAppId : ${{secrets.LUISAPPID}}
+          LuisAPIKey : ${{secrets.LUISAPIKEY}}
+          LuisAPIHostName : ${{secrets.LUISAPIHOSTNAME}}
+          AppInsightsInstrumentationKey : ${{secrets.APPINSIGHTSINSTRUMENTATIONKEY}}
         
         run: |
           pytest
