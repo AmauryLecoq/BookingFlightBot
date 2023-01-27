@@ -77,6 +77,15 @@ class LuisHelper:
                             new_date = datetime_entities[i]["timex"][0]
                             potential_dates.append(new_date)
 
+                geographyV2_city_entities = recognizer_result.entities.get("datetime", [])
+
+                if len(geographyV2_city_entities) > 0:
+                    potential_city = []
+                    # we now can get a list of all the dates included in the Luis trace
+                    for i in range(len(geographyV2_city_entities)):
+                            new_city = datetime_entities[i]
+                            potential_city.append(new_city)
+
                 # Get the destination city
                 dst_city_entities = recognizer_result.entities.get("dst_city", [])
 

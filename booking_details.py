@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
-
+from __future__ import annotations
 
 class BookingDetails:
     def __init__(
@@ -10,7 +10,8 @@ class BookingDetails:
         start_date : str = None,
         end_date: str = None,
         budget: str = None,
-        unsupported_airports: str = None
+        unsupported_airports: str = None,
+        geo_list: list[str] = None
     ):
         self.destination = destination
         self.origin = origin
@@ -18,3 +19,4 @@ class BookingDetails:
         self.end_date = end_date
         self.budget = budget
         self.unsupported_airports = unsupported_airports
+        self.geo_list = geo_list

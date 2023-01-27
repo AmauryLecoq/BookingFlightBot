@@ -79,8 +79,8 @@ class BookingDialogTest(aiounittest.AsyncTestCase):
 
         step1 = await adapter.test("Hello", "To what city would you like to travel?") # call adapter to ask
         step2 = await step1.test("Paris", "From what city will you be travelling?") # input to the adapter
-        step3 = await step2.test("Lille", "On what date would you like to travel?")
-        step4 = await step3.test("01-01-2023", "On what date would you like to travel?")
+        step3 = await step2.test("Lille", "On what date would you like to start your travel?")
+        step4 = await step3.test("01-01-2023", "On what date would you like to return from your travel?")
         step5 = await step4.test("31-01-2023", "What will be your budget for this trip?")
         step6 = await step5.send("1000")
 
