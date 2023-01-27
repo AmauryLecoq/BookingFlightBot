@@ -61,7 +61,11 @@ class BookingDialog(CancelAndHelpDialog):
             default_locale="en-us"
             ))
         self.add_dialog(
-            DateResolverDialog(DateResolverDialog.__name__, self.telemetry_client)
+            DateResolverDialog(
+                DateResolverDialog.__name__,
+                self.telemetry_client
+                )
+
         )
         self.add_dialog(waterfall_dialog)
 
@@ -77,7 +81,7 @@ class BookingDialog(CancelAndHelpDialog):
             return await step_context.prompt(
                 TextPrompt.__name__,
                 PromptOptions(
-                    prompt=MessageFactory.text("To what city would you like to travel?")
+                    prompt=MessageFactory.text(f"To what city would you like to travel?")
                 ),
             )  # pylint: disable=line-too-long,bad-continuation
 
@@ -113,8 +117,10 @@ class BookingDialog(CancelAndHelpDialog):
         if not booking_details.start_date or self.is_ambiguous(
             booking_details.start_date
         ):
+            booking_details.start_date = None
             return await step_context.begin_dialog(
-                DateResolverDialog.__name__, booking_details.start_date
+                DateResolverDialog.__name__,
+                booking_details
             )  # pylint: disable=line-too-long
 
         return await step_context.next(booking_details.start_date)
@@ -129,12 +135,18 @@ class BookingDialog(CancelAndHelpDialog):
         booking_details = step_context.options
 
         # Capture the results of the previous step
-        booking_details.start_date = step_context.result
+        if type(step_context.result) == str:
+            booking_details.start_date = step_context.result
+        else:
+            refreshed_details = step_context.result
+            booking_details.start_date = refreshed_details.start_date
+        
         if not booking_details.end_date or self.is_ambiguous(
             booking_details.end_date
         ):
+            booking_details.end_date = None
             return await step_context.begin_dialog(
-                DateResolverDialog.__name__, booking_details.end_date
+                DateResolverDialog.__name__, booking_details
             )  # pylint: disable=line-too-long
 
         return await step_context.next(booking_details.end_date)
@@ -143,8 +155,15 @@ class BookingDialog(CancelAndHelpDialog):
     ) -> DialogTurnResult:
         """Confirm the information the user has provided."""
         booking_details = step_context.options
+
         # Capture the results of the previous step
-        booking_details.end_date = step_context.result
+        if type(step_context.result) == str:
+            booking_details.end_date = step_context.result
+        else:
+            refreshed_details = step_context.result
+            booking_details.end_date = refreshed_details.end_date
+        # Capture the results of the previous step
+        
         if booking_details.budget is None:
             return await step_context.prompt(
                 TextPrompt.__name__,

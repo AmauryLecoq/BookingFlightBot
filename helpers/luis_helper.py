@@ -68,6 +68,7 @@ class LuisHelper:
                 # Check and record datetime
 
                 datetime_entities = recognizer_result.entities.get("datetime", [])
+
                 if len(datetime_entities) > 0:
                     potential_dates = []
                     # we now can get a list of all the dates included in the Luis trace
@@ -78,26 +79,23 @@ class LuisHelper:
 
                 # Get the destination city
                 dst_city_entities = recognizer_result.entities.get("dst_city", [])
+
                 if len(dst_city_entities) > 0:
                     if recognizer_result.entities.get("dst_city", [])[0]:
                         result.destination = dst_city_entities[0].capitalize()
-                    
                     else:
                         result.destination = None
-                
                 else :
                     result.destination = None
 
-
                 # Get the origin city
                 or_city_entities = recognizer_result.entities.get("or_city", [])
+
                 if len(or_city_entities) > 0:
                     if recognizer_result.entities.get("or_city", [])[0]:
                         result.origin = or_city_entities[0].capitalize()
-                    
                     else:
                         result.origin = None
-                
                 else :
                     result.origin = None
 
@@ -118,12 +116,15 @@ class LuisHelper:
                                 break
                     else:
                         result.start_date = None
-                else:
+                elif len(potential_dates)>0 :
                     result.start_date = min(potential_dates)
+                else:
+                    result.start_date = None
                 
                 # Get the Return date of the trip from Luis
                 end_date_entities = recognizer_result.entities.get("end_date", [])
                 # As this might contains unformatted date/time, we will the recognozer to transform it
+                
                 if len(end_date_entities)>0:
                     if recognizer_result.entities.get("end_date", [])[0]:
                         end_date = recognizer_result.entities.get("end_date", [])[0]
@@ -135,8 +136,10 @@ class LuisHelper:
                                 break
                     else:
                         result.end_date = None
-                else:
+                elif len(potential_dates)>0 :
                     result.end_date = max(potential_dates)
+                else:
+                    result.end_date = None
 
                 # Get the budget for the trip
                 budget_entities = recognizer_result.entities.get("budget", [])
@@ -149,18 +152,12 @@ class LuisHelper:
                         if recog_budget[0].resolution is not None:
                             budget = f"{recog_budget[0].resolution['value']}"
                             result.budget = budget
-                        
                         else:
                             result.budget = None
-                        
-                        
-                    
                     else:
                         result.budget = None
-                
                 else :
                     result.budget = None
-
 
         except Exception as exception:
             print(exception)

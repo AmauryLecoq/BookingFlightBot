@@ -11,6 +11,7 @@ from botbuilder.dialogs.prompts import (
     PromptValidatorContext,
     PromptOptions,
     DateTimeResolution,
+    ConfirmPrompt
 )
 from .cancel_and_help_dialog import CancelAndHelpDialog
 
@@ -34,29 +35,38 @@ class DateResolverDialog(CancelAndHelpDialog):
         date_time_prompt.telemetry_client = telemetry_client
 
         waterfall_dialog = WaterfallDialog(
-            WaterfallDialog.__name__ + "2", [self.initial_step, self.final_step]
+            WaterfallDialog.__name__ + "2", 
+            [
+                self.start_date_step,
+                self.end_date_step,
+                self.verification_step,
+                self.final_step]
         )
         waterfall_dialog.telemetry_client = telemetry_client
 
         self.add_dialog(date_time_prompt)
+        self.add_dialog(ConfirmPrompt(
+            ConfirmPrompt.__name__,
+            default_locale="en-us"
+            ))
         self.add_dialog(waterfall_dialog)
 
         self.initial_dialog_id = WaterfallDialog.__name__ + "2"
 
-    async def initial_step(
+    async def start_date_step(
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         """Prompt for the date."""
-        timex = step_context.options
+        booking_details = step_context.options
 
-        prompt_msg = "On what date would you like to travel?"
-        reprompt_msg = (
-            "I'm sorry, for best results, please enter your travel "
-            "date including the month, day and year."
-        )
+        if not booking_details.start_date :
 
-        if timex is None:
-            # We were not given any date at all so prompt the user.
+            prompt_msg = f"On what date would you like to start your travel?"
+            reprompt_msg = (
+                "I'm sorry, for best results, please enter your travel "
+                "date including the month, day and year."
+            )
+
             return await step_context.prompt(
                 DateTimePrompt.__name__,
                 PromptOptions(  # pylint: disable=bad-continuation
@@ -66,18 +76,76 @@ class DateResolverDialog(CancelAndHelpDialog):
             )
 
         # We have a Date we just need to check it is unambiguous.
-        if "definite" in Timex(timex).types:
+        if "definite" in Timex(booking_details.start_date).types:
             # This is essentially a "reprompt" of the data we were given up front.
             return await step_context.prompt(
                 DateTimePrompt.__name__, PromptOptions(prompt=reprompt_msg)
             )
 
-        return await step_context.next(DateTimeResolution(timex=timex))
+        return await step_context.next(DateTimeResolution(timex=booking_details.start_date))
+
+    async def end_date_step(
+        self, step_context: WaterfallStepContext
+    ) -> DialogTurnResult:
+        """Prompt for the date."""
+        booking_details = step_context.options
+        booking_details.start_date = step_context.result[0].timex
+        if not booking_details.end_date :
+
+            prompt_msg = f"On what date would you like to return from your travel?"
+            reprompt_msg = (
+                "I'm sorry, for best results, please enter your travel "
+                "date including the month, day and year."
+            )
+
+            return await step_context.prompt(
+                DateTimePrompt.__name__,
+                PromptOptions(  # pylint: disable=bad-continuation
+                    prompt=MessageFactory.text(prompt_msg),
+                    retry_prompt=MessageFactory.text(reprompt_msg),
+                ),
+            )
+
+        # We have a Date we just need to check it is unambiguous.
+        if "definite" in Timex(booking_details.end_date).types:
+            # This is essentially a "reprompt" of the data we were given up front.
+            return await step_context.prompt(
+                DateTimePrompt.__name__, PromptOptions(prompt=reprompt_msg)
+            )
+
+        return await step_context.next(DateTimeResolution(timex=booking_details.end_date))
+
+    async def verification_step(self, step_context: WaterfallStepContext):
+        """Cleanup - set final return value and end dialog."""
+        booking_details = step_context.options
+        booking_details.end_date = step_context.result[0].timex
+
+        if booking_details.start_date > booking_details.end_date:
+            msg = (
+                f"You have indicated wanting to start your on travel on : {booking_details.start_date} "
+                f"which is after your return date requested on : {booking_details.start_date} "
+                f"Please confirm you want to proceed.")
+
+            return await step_context.prompt(
+            ConfirmPrompt.__name__,
+            PromptOptions(prompt=MessageFactory.text(msg)
+            )
+        )
+
+        else:
+            return await step_context.end_dialog(booking_details)
 
     async def final_step(self, step_context: WaterfallStepContext):
         """Cleanup - set final return value and end dialog."""
-        timex = step_context.result[0].timex
-        return await step_context.end_dialog(timex)
+        if step_context.result:
+            booking_details = step_context.options
+            return await step_context.end_dialog(booking_details)
+        else:
+            # If the client says we have not properly record the data
+            booking_details = step_context.options
+            booking_details.start_date = None
+            booking_details.end_date = None
+            return await step_context.begin_dialog(DateResolverDialog.__name__, booking_details)
 
     @staticmethod
     async def datetime_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
