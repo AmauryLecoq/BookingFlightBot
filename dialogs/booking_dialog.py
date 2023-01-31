@@ -28,7 +28,7 @@ from .cancel_and_help_dialog import CancelAndHelpDialog
 from .date_resolver_dialog import DateResolverDialog
 from booking_details import BookingDetails
 from .budget_resolver_dialog import BudgetResolverDialog
-
+from botbuilder.schema import InputHints
 
 
 import logging
@@ -337,8 +337,15 @@ class BookingDialog(CancelAndHelpDialog):
             # problem = we are in an infinite loop till confirmation is given
             line = "Invalid proposal to Client"
             logger.warning(line)
-            result = BookingDetails()
-            return await step_context.begin_dialog(BookingDialog.__name__, result)
+            sorry_text = (
+                "Sorry that I misunderstood your request. I will do better next time I promise"
+            )
+            sorry_message = MessageFactory.text(
+                sorry_text, sorry_text, InputHints.ignoring_input
+            )
+            await step_context.context.send_activity(sorry_message)
+            booking_details = None
+            return await step_context.end_dialog(booking_details)
 
     def is_ambiguous(self, timex: str) -> bool:
         """Ensure time is correct."""

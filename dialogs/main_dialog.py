@@ -97,11 +97,11 @@ class MainDialog(ComponentDialog):
             return await step_context.begin_dialog(self._booking_dialog_id, luis_result)
 
         if intent == Intent.NONE_INTENT.value:
-            get_weather_text = "TODO: none intent flow here"
-            get_weather_message = MessageFactory.text(
-                get_weather_text, get_weather_text, InputHints.ignoring_input
+            none_intent_text = "Sorry but I can only process flight booking information. Please try asking in a different way"
+            none_intent_message = MessageFactory.text(
+                none_intent_text, none_intent_text, InputHints.ignoring_input
             )
-            await step_context.context.send_activity(get_weather_message)
+            await step_context.context.send_activity(none_intent_message)
 
         else:
             didnt_understand_text = (

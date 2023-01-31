@@ -128,9 +128,45 @@ class BookingDialogTest(aiounittest.AsyncTestCase):
                 "Please select a currency\n\n   1. Dollar\n   2. Euro\n   3. Pound\n   4. Yen"
                     ) # input to the adapter
         step3 = await step2.send("Dollar")
-        await step2.assert_reply(
+        await step3.assert_reply(
             f"Please confirm, I have you traveling to: Neverland"
             f" from: Caprica on: 2016-08-13."
             f" Returning on: 2017-02-02 with a budget of : 1900 Dollars."
             f" (1) Yes or (2) No")
+
+    async def test_booking_dialog_3(self):
+        async def exec_test(turn_context: TurnContext):
+            #need to set dialog context
+            dialog_context = await dialogs.create_context(turn_context)
+            results = await dialog_context.continue_dialog()
+            if (results.status == DialogTurnStatus.Empty):
+                await dialog_context.begin_dialog(dialog_id)
+            elif results.status == DialogTurnStatus.Complete:
+                reply =  results.result
+                await turn_context.send_activity(reply)
+            
+            await conv_state.save_changes(turn_context)
+
+        #need to create object for the test adapter
+        adapter = TestAdapter(exec_test)
+        # for dialog state u need converstation state
+        conv_state = ConversationState(MemoryStorage())
+        dialog_id = MainDialog.__name__
+        config = DefaultConfig()
+        luis_recognizer = FlightBookingRecognizer(config)
+        booking_dialog = BookingDialog()
+        
+        #for dialog set u need dialoag state
+        dialogs_state = conv_state.create_property("dialog_state")
+        dialogs = DialogSet(dialogs_state)
+        dialogs.add(MainDialog(luis_recognizer,booking_dialog ))
+        #test adapter will be use to pass all information
+        
+
+
+        step1 = await adapter.test("hi", "What can I help you with today?") # call adapter to ask
+        step2 = await step1.send("I want to dance") # input to the adapter
+        await step2.assert_reply(
+            f"Sorry but I can only process flight booking information. Please try asking in a different way"
+            )
             
