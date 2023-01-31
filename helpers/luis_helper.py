@@ -70,21 +70,35 @@ class LuisHelper:
                 datetime_entities = recognizer_result.entities.get("datetime", [])
 
                 if len(datetime_entities) > 0:
-                    potential_dates = []
+                    potential_dates_list = []
                     # we now can get a list of all the dates included in the Luis trace
                     for i in range(len(datetime_entities)):
                         if datetime_entities[i]["type"] == 'date':
                             new_date = datetime_entities[i]["timex"][0]
-                            potential_dates.append(new_date)
+                            potential_dates_list.append(new_date)
 
-                geographyV2_city_entities = recognizer_result.entities.get("datetime", [])
+                # Check and record geographyV2_city
+                geographyV2_city_entities = recognizer_result.entities.get("geographyV2_city", [])
 
                 if len(geographyV2_city_entities) > 0:
-                    potential_city = []
-                    # we now can get a list of all the dates included in the Luis trace
+                    potential_city_list = []
+                    # we now can get a list of all the city included in the Luis trace
                     for i in range(len(geographyV2_city_entities)):
-                            new_city = datetime_entities[i]
-                            potential_city.append(new_city)
+                            new_city = geographyV2_city_entities[i].capitalize()
+                            potential_city_list.append(new_city)
+                    result.geo_list = potential_city_list
+                
+                # Check and record number
+                number_entities = recognizer_result.entities.get("number", [])
+
+                if len(number_entities) > 0:
+                    potential_budget_list = []
+                    # we now can get a list of all the number included in the Luis trace
+                    for i in range(len(number_entities)):
+                            new_budget = str(number_entities[i])
+                            potential_budget_list.append(new_budget)
+                    result.number_list = potential_budget_list
+                
 
                 # Get the destination city
                 dst_city_entities = recognizer_result.entities.get("dst_city", [])
@@ -125,8 +139,8 @@ class LuisHelper:
                                 break
                     else:
                         result.start_date = None
-                elif len(potential_dates)>0 :
-                    result.start_date = min(potential_dates)
+                elif len(potential_dates_list)>0 :
+                    result.start_date = min(potential_dates_list)
                 else:
                     result.start_date = None
                 
@@ -145,8 +159,8 @@ class LuisHelper:
                                 break
                     else:
                         result.end_date = None
-                elif len(potential_dates)>0 :
-                    result.end_date = max(potential_dates)
+                elif len(potential_dates_list)>0 :
+                    result.end_date = max(potential_dates_list)
                 else:
                     result.end_date = None
 

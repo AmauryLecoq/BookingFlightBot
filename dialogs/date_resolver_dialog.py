@@ -59,13 +59,16 @@ class DateResolverDialog(CancelAndHelpDialog):
         """Prompt for the date."""
         booking_details = step_context.options
 
-        if not booking_details.start_date :
-
-            prompt_msg = f"On what date would you like to start your travel?"
-            reprompt_msg = (
+        reprompt_msg = (
                 "I'm sorry, for best results, please enter your travel "
                 "date including the month, day and year."
             )
+
+        if not booking_details.start_date or self.is_ambiguous(
+            booking_details.start_date
+        ):
+
+            prompt_msg = f"On what date would you like to start your travel?"
 
             return await step_context.prompt(
                 DateTimePrompt.__name__,
@@ -90,13 +93,18 @@ class DateResolverDialog(CancelAndHelpDialog):
         """Prompt for the date."""
         booking_details = step_context.options
         booking_details.start_date = step_context.result[0].timex
-        if not booking_details.end_date :
-
-            prompt_msg = f"On what date would you like to return from your travel?"
-            reprompt_msg = (
+        
+        reprompt_msg = (
                 "I'm sorry, for best results, please enter your travel "
                 "date including the month, day and year."
             )
+
+        if not booking_details.end_date or self.is_ambiguous(
+            booking_details.end_date
+        ):
+
+            prompt_msg = f"On what date would you like to return from your travel?"
+            
 
             return await step_context.prompt(
                 DateTimePrompt.__name__,
@@ -110,7 +118,7 @@ class DateResolverDialog(CancelAndHelpDialog):
         if "definite" in Timex(booking_details.end_date).types:
             # This is essentially a "reprompt" of the data we were given up front.
             return await step_context.prompt(
-                DateTimePrompt.__name__, PromptOptions(prompt=reprompt_msg)
+                DateTimePrompt.__name__, PromptOptions(MessageFactory.text(reprompt_msg))
             )
 
         return await step_context.next(DateTimeResolution(timex=booking_details.end_date))
@@ -146,6 +154,11 @@ class DateResolverDialog(CancelAndHelpDialog):
             booking_details.start_date = None
             booking_details.end_date = None
             return await step_context.begin_dialog(DateResolverDialog.__name__, booking_details)
+
+    def is_ambiguous(self, timex: str) -> bool:
+        """Ensure time is correct."""
+        timex_property = Timex(timex)
+        return "definite" not in timex_property.types
 
     @staticmethod
     async def datetime_prompt_validator(prompt_context: PromptValidatorContext) -> bool:

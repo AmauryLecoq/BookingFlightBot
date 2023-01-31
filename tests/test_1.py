@@ -81,13 +81,13 @@ class BookingDialogTest(aiounittest.AsyncTestCase):
         step2 = await step1.test("Paris", "From what city will you be travelling?") # input to the adapter
         step3 = await step2.test("Lille", "On what date would you like to start your travel?")
         step4 = await step3.test("01-01-2023", "On what date would you like to return from your travel?")
-        step5 = await step4.test("31-01-2023", "What will be your budget for this trip?")
-        step6 = await step5.send("1000")
+        step5 = await step4.test("31-01-2023", "Please provide me with your budget")
+        step6 = await step5.send("1000 euros")
 
         await step6.assert_reply(
             f"Please confirm, I have you traveling to: Paris"
             f" from: Lille on: 2023-01-01."
-            f" Returning on: 2023-01-31 with a budget of : 1000 ."
+            f" Returning on: 2023-01-31 with a budget of : 1000 Euro."
             f" (1) Yes or (2) No")
     
     async def test_booking_dialog_2(self):
@@ -121,13 +121,16 @@ class BookingDialogTest(aiounittest.AsyncTestCase):
 
 
         step1 = await adapter.test("hi", "What can I help you with today?") # call adapter to ask
-        step2 = await step1.send(
+        step2 = await step1.test(
             "yes, how about going to neverland from caprica on august 13,\
              2016 and back on february 02, 2017 for 5 adults. \
-                for this trip, my budget would be 1900.") # input to the adapter
+                for this trip, my budget would be 1900.", 
+                "Please select a currency\n\n   1. Dollar\n   2. Euro\n   3. Pound\n   4. Yen"
+                    ) # input to the adapter
+        step3 = await step2.send("Dollar")
         await step2.assert_reply(
             f"Please confirm, I have you traveling to: Neverland"
             f" from: Caprica on: 2016-08-13."
-            f" Returning on: 2017-02-02 with a budget of : 1900 ."
+            f" Returning on: 2017-02-02 with a budget of : 1900 Dollars."
             f" (1) Yes or (2) No")
             
