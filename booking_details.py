@@ -11,8 +11,8 @@ class BookingDetails:
         end_date: str = None,
         budget: str = None,
         unsupported_airports: str = None,
-        geo_list: list[str] = None,
-        number_list : list[str] = None
+        geo_list: list[str] = [],
+        number_list : list[str] = []
     ):
         self.destination = destination
         self.origin = origin
