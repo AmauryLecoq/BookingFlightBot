@@ -16,3 +16,4 @@ python-dotenv
 opencensus-ext-azure
 aiounittest
 pytest
+pandas

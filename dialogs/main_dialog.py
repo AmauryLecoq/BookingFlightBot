@@ -89,6 +89,7 @@ class MainDialog(ComponentDialog):
 
         if intent == Intent.BOOK_FLIGHT.value and luis_result:
             # Show a warning for Origin and Destination if we can't resolve them.
+            # Not used
             # await MainDialog._show_warning_for_unsupported_cities(
             #     step_context.context, luis_result
             # )

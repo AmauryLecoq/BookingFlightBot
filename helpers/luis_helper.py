@@ -66,11 +66,13 @@ class LuisHelper:
                 # e.g. missing a Year.
 
                 # Check and record datetime
-
+                potential_dates_list = []
+                potential_city_list = []
+                potential_budget_list = []
                 datetime_entities = recognizer_result.entities.get("datetime", [])
 
                 if len(datetime_entities) > 0:
-                    potential_dates_list = []
+                    
                     # we now can get a list of all the dates included in the Luis trace
                     for i in range(len(datetime_entities)):
                         if datetime_entities[i]["type"] == 'date':
@@ -81,23 +83,25 @@ class LuisHelper:
                 geographyV2_city_entities = recognizer_result.entities.get("geographyV2_city", [])
 
                 if len(geographyV2_city_entities) > 0:
-                    potential_city_list = []
+                    
                     # we now can get a list of all the city included in the Luis trace
                     for i in range(len(geographyV2_city_entities)):
                             new_city = geographyV2_city_entities[i].capitalize()
                             potential_city_list.append(new_city)
-                    result.geo_list = potential_city_list
+                # Input in result
+                result.geo_list = potential_city_list
                 
                 # Check and record number
                 number_entities = recognizer_result.entities.get("number", [])
 
                 if len(number_entities) > 0:
-                    potential_budget_list = []
+                    
                     # we now can get a list of all the number included in the Luis trace
                     for i in range(len(number_entities)):
                             new_budget = str(number_entities[i])
                             potential_budget_list.append(new_budget)
-                    result.number_list = potential_budget_list
+                # Input in result
+                result.number_list = potential_budget_list
                 
 
                 # Get the destination city

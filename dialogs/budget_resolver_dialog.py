@@ -69,8 +69,7 @@ class BudgetResolverDialog(CancelAndHelpDialog):
 
         if booking_details.budget is not None:
             return await step_context.next(booking_details.budget)
-        elif booking_details.number_list is not None:
-            if len(booking_details.number_list) > 0:
+        elif len(booking_details.number_list) > 0:
 
                 listofchoice = []
                 [listofchoice.append(Choice(i)) for i in booking_details.number_list]

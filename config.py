@@ -26,3 +26,5 @@ class DefaultConfig:
         "AppInsightsInstrumentationKey", ""
     )
     CONNECTION_STRING = f"InstrumentationKey={APPINSIGHTS_INSTRUMENTATION_KEY}"
+    LUIS_AUTHORING_KEY = os.environ.get("LuisAuthoringKey", "")
+    LUIS_AUTHORING_HOST_NAME = os.environ.get("LuisAuthoringEndpoint", "")

@@ -109,21 +109,20 @@ class BookingDialog(CancelAndHelpDialog):
         booking_details = step_context.options
 
         if booking_details.destination is None:
-            if booking_details.geo_list is not None:
-                if len(booking_details.geo_list) > 0:
-                    listofchoice = []
-                    [listofchoice.append(Choice(i)) for i in booking_details.geo_list]
-                    listofchoice.append(Choice("Other"))
-                    
-                    return await step_context.prompt(
-                    ChoicePrompt.__name__,
-                    PromptOptions(prompt=MessageFactory.text(
-                        #here we put what we want the user to see
-                        "I have identified potential destination. Please select an option"),
-                        #now we can make the user choose. Input the list prior to this to use it
-                        choices=listofchoice
-                        )
-                )
+            if len(booking_details.geo_list) > 0:
+                listofchoice = []
+                [listofchoice.append(Choice(i)) for i in booking_details.geo_list]
+                listofchoice.append(Choice("Other"))
+                
+                return await step_context.prompt(
+                ChoicePrompt.__name__,
+                PromptOptions(prompt=MessageFactory.text(
+                    #here we put what we want the user to see
+                    "I have identified potential destination. Please select an option"),
+                    #now we can make the user choose. Input the list prior to this to use it
+                    choices=listofchoice
+                    )
+            )
             return await step_context.prompt(
                 TextPrompt.__name__,
                 PromptOptions(
@@ -161,20 +160,19 @@ class BookingDialog(CancelAndHelpDialog):
         booking_details = step_context.options
         booking_details.destination = step_context.result
         if booking_details.origin is None:
-            if booking_details.geo_list is not None:
-                if len(booking_details.geo_list) > 0:
-                    listofchoice = []
-                    [listofchoice.append(Choice(i)) for i in booking_details.geo_list]
-                    listofchoice.append(Choice("Other"))
-                    return await step_context.prompt(
-                    ChoicePrompt.__name__,
-                    PromptOptions(prompt=MessageFactory.text(
-                        #here we put what we want the user to see
-                        "I have identified potential destination. Please select an option"),
-                        #now we can make the user choose. Input the list prior to this to use it
-                        choices=listofchoice
-                        )
-                )
+            if len(booking_details.geo_list) > 0:
+                listofchoice = []
+                [listofchoice.append(Choice(i)) for i in booking_details.geo_list]
+                listofchoice.append(Choice("Other"))
+                return await step_context.prompt(
+                ChoicePrompt.__name__,
+                PromptOptions(prompt=MessageFactory.text(
+                    #here we put what we want the user to see
+                    "I have identified potential origin. Please select an option"),
+                    #now we can make the user choose. Input the list prior to this to use it
+                    choices=listofchoice
+                    )
+            )
 
             return await step_context.prompt(
                 TextPrompt.__name__,
@@ -330,12 +328,14 @@ class BookingDialog(CancelAndHelpDialog):
             booking_details = step_context.options
             #after adding confirm step
             #booking_details.end_date = step_context.result
+            line = "Proposal_accepted_by_client"
+            logger.info(line) 
 
             return await step_context.end_dialog(booking_details)
         else:
             # If the client says we have not properly record the data
             # problem = we are in an infinite loop till confirmation is given
-            line = "Invalid proposal to Client"
+            line = "Proposal_rejected_by_client"
             logger.warning(line)
             sorry_text = (
                 "Sorry that I misunderstood your request. I will do better next time I promise"

@@ -63,8 +63,10 @@ def convert_data(data, ls_entities):
 # pour convertir les data pour LUIS :
 luis_data = convert_data(data, ls_entities)
 
-json_object = json.dumps(luis_data)
-json_file = f"{BASE_DIR}/extract_frames.json"
+# json_object = json.dumps(luis_data)
+# json_file = f"{BASE_DIR}/extract_frames.json"
 
-with open(json_file, "w") as outfile:
-    outfile.write(json_object)
+# with open(json_file, "w") as outfile:
+#     outfile.write(json_object)
+
+print(int((len(luis_data)*80/100)))
