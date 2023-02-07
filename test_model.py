@@ -25,7 +25,7 @@ authoringEndpoint = CONFIG.LUIS_AUTHORING_HOST_NAME
 predictionKey = CONFIG.LUIS_API_KEY
 predictionEndpoint = "https://" + CONFIG.LUIS_API_HOST_NAME
 
-app_id = "a06eb70f-9213-4239-ae14-d2601136e8ac"
+app_id = CONFIG.LUIS_APP_ID
 
 versionId = "0.0"
 
@@ -73,74 +73,10 @@ def convert_data(data, ls_entities):
                     luis_data.append(json_part[j])
         return luis_data
 
-test_json = {
-    "LabeledTestSetUtterances" : [
-        {
-            "text": "i have no flexibility for dates... but i can leave from atlantis rather than caprica. how about that?",
-            "intent": "BookFlight",
-            "entities": [
-                {
-                    "entity": "or_city",
-                    "startPos": 77,
-                    "endPos": 84
-                }
-            ]
-        },
-        {
-            "text": "oh yes! between september 12 and 26!",
-            "intent": "BookFlight",
-            "entities": [
-                {
-                    "entity": "str_date",
-                    "startPos": 16,
-                    "endPos": 28
-                }, 
-                {
-                    "entity": "end_date",
-                    "startPos": 33,
-                    "endPos": 35
-                }
-            ]
-        }
-    ]
-}
+
     
 slot_name = "Production"
 headers = {'Content-Type': 'application/json','Ocp-Apim-Subscription-Key': predictionKey}
-req_start = requests.post(f'{predictionEndpoint}/luis/v3.0-preview/apps/{app_id}/slots/{slot_name}/evaluations',
-headers=headers, json=test_json)
-
-start = req_start.json()
-print(start)
-operationId = start["operationId"]
-
-req_status = requests.get(f'{predictionEndpoint}/luis/v3.0-preview/apps/{app_id}/slots/{slot_name}/evaluations/{operationId}/status',
-headers=headers
-)
-print()
-status = req_status.json()
-
-print(status)
-
-req_result = requests.get(
- f'{predictionEndpoint}/luis/v3.0-preview/apps/{app_id}/slots/{slot_name}/evaluations/{operationId}/result',
- headers=headers   
-)
-
-result = req_result.json()
-stats = result["intentModelsStats"]
-precision, recall, fScore = stats[0]["precision"], stats[0]["recall"], stats[0]["fScore"]
-
-
-print()
-print(
-    f"precision = {precision}\n\
-    recal = {recall}\n\
-    fScore = {fScore}"
-    )
-
-#print(result)
-
 
 #Extract information from our json file
 BASE_DIR = Path(__file__).resolve(strict=True).parent
@@ -229,6 +165,3 @@ for i in range(5):
     {entity_name}_fScore = {entity_fScore}"
         )
 
-
-
-#print(result)

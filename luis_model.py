@@ -16,6 +16,17 @@ CONFIG = DefaultConfig()
 
 import json, time, uuid
 
+import azure.cognitiveservices.language.luis.version as azl
+
+azure_luis_version = azl.VERSION
+print(f"azure-cognitiveservices-language-luis package version: {azure_luis_version}")
+
+if (azure_luis_version != "0.7.0"):
+    print("please use the 0.7.0 version of azure-cognitiveservices-language-luis package")
+    exit()
+
+
+
 def get_grandchild_id(model, childName, grandChildName):
     
     theseChildren = next(filter((lambda child: child.name == childName), model.children))
@@ -94,7 +105,7 @@ def luis_model():
     # pour convertir les data pour LUIS :
     luis_data = convert_data(data, ls_entities)
     #train_utterances_qty = int(len(luis_data)*80/100)
-    train_utterances_qty = 20
+    train_utterances_qty = 100
 
     # We use a UUID to avoid name collisions.
     UteranceQty = train_utterances_qty
@@ -138,7 +149,7 @@ def luis_model():
     prebuiltFeatureNotRequiredDefinition = { "model_name": "datetimeV2" }
     for prebuiltId in dateId_list:
         client.features.add_entity_feature(app_id, versionId, prebuiltId, prebuiltFeatureNotRequiredDefinition)
-
+    
     # Some entity have features: geographyV2 in dst_city & dst_city
     prebuiltFeatureNotRequiredDefinition = { "model_name": "geographyV2" }
     for prebuiltId in cityId_listId:
@@ -168,7 +179,37 @@ def luis_model():
             "entityLabels" : [],
         },
         {
-            "text": "I want to fly to the moon",
+            "text": "Please, we want to buy this book",
+            "intentName": "None",
+            "entityLabels" : [],
+        },
+        {
+            "text": "Canada weather is colder than France one",
+            "intentName": "None",
+            "entityLabels" : [],
+        },
+        {
+            "text": "Give me the weather forecast",
+            "intentName": "None",
+            "entityLabels" : [],
+        },
+        {
+            "text": "The Sun and the Moon are part of the Solar system",
+            "intentName": "None",
+            "entityLabels" : [],
+        },
+        {
+            "text": "My cab is not yet here, please advice location",
+            "intentName": "None",
+            "entityLabels" : [],
+        },
+        {
+            "text": "My train was cancelled again, please advice next departure",
+            "intentName": "None",
+            "entityLabels" : [],
+        },
+        {
+            "text": "Quantic computer are the future breakthrough technology",
             "intentName": "None",
             "entityLabels" : [],
         },
@@ -197,21 +238,6 @@ def luis_model():
 
     # Publish the app
     responseEndpointInfo = client.apps.publish(app_id, versionId, is_staging=False)
-    
-    runtimeCredentials = CognitiveServicesCredentials(predictionKey)
-    clientRuntime = LUISRuntimeClient(endpoint=predictionEndpoint, credentials=runtimeCredentials)
-    # Production == slot name
-    predictionRequest = { "query" : "I want to fly to Paris from London" }
-    slot_name = "Production"
-    predictionResponse = clientRuntime.prediction.get_slot_prediction(app_id,
-     slot_name=slot_name, prediction_request= predictionRequest) 
-    print("Top intent: {}".format(predictionResponse.prediction.top_intent))
-    print("Sentiment: {}".format (predictionResponse.prediction.sentiment))
-    print("Intents: ")
-
-    for intent in predictionResponse.prediction.intents:
-        print("\t{}".format (json.dumps (intent)))
-    print("Entities: {}".format (predictionResponse.prediction.entities))
 
 luis_model()
 
