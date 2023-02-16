@@ -12,6 +12,18 @@ from botbuilder.core import (
 )
 from botbuilder.schema import ActivityTypes, Activity
 
+import logging
+from opencensus.ext.azure.log_exporter import AzureLogHandler, AzureEventHandler
+from config import DefaultConfig
+
+#To deal with warning logging
+CONFIG = DefaultConfig()
+
+connection_string = CONFIG.CONNECTION_STRING
+logger = logging.getLogger(__name__)
+logger.addHandler(AzureLogHandler(
+    connection_string=connection_string)
+)
 
 class AdapterWithErrorHandler(BotFrameworkAdapter):
     def __init__(
@@ -27,7 +39,9 @@ class AdapterWithErrorHandler(BotFrameworkAdapter):
             # This check writes out errors to console log
             # NOTE: In production environment, you should consider logging this to Azure
             #       application insights.
-            print(f"\n [on_turn_error] unhandled error: {error}", file=sys.stderr)
+            error_log = f"[on_turn_error] unhandled error: {error}"
+            logger.exception(error_log)
+            print(f"\n {error_log}", file=sys.stderr)
             traceback.print_exc()
 
             # Send a message to the user

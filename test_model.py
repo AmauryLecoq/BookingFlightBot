@@ -101,7 +101,8 @@ for i in range(1, 20):
         test_json = {"LabeledTestSetUtterances": LabeledTestSetUtterances}
 
 #print(test_json)
-req_start = requests.post(f'{predictionEndpoint}/luis/v3.0-preview/apps/{app_id}/slots/{slot_name}/evaluations',
+req_start = requests.post(f'{predictionEndpoint}/luis/v3.0-preview/apps/\
+                          {app_id}/slots/{slot_name}/evaluations',
 headers=headers, json=test_json)
 
 start = req_start.json()
@@ -110,17 +111,20 @@ operationId = start["operationId"]
 
 waiting = True
 while waiting:
-    req_status = requests.get(f'{predictionEndpoint}/luis/v3.0-preview/apps/{app_id}/slots/{slot_name}/evaluations/{operationId}/status',
+    req_status = requests.get(f'{predictionEndpoint}/luis/v3.0-preview/apps/\
+                              {app_id}/slots/{slot_name}/evaluations/{operationId}/status',
 headers=headers
 )
     status = req_status.json()
-    if status["status"] == 'succeeded':
-        print ("tested")
-        waiting = False
-    else: 
+    if status["status"] != 'succeeded':
         print(status)
         print ("Waiting 10 seconds for testing to complete...")
         time.sleep(10)
+        
+    else: 
+        print(status)
+        print ("tested")
+        waiting = False
         
 
 
@@ -132,11 +136,12 @@ req_result = requests.get(
 )
 
 result = req_result.json()
+
 intent_stats = result["intentModelsStats"]
 entities_stats = result["entityModelsStats"]
 
 # Retrieve intents score from testing
-intent_precision, intent_recall, intent_fScore = intent_stats[0]["precision"], intent_stats[0]["recall"], intent_stats[0]["fScore"]
+intent_precision, intent_recall, intent_fScore = intent_stats[0]["precision"],intent_stats[0]["recall"], intent_stats[0]["fScore"]
 
 print()
 print(

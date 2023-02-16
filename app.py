@@ -1,13 +1,3 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License.
-
-"""
-This sample shows how to create a bot that demonstrates the following:
-- Use [LUIS](https://www.luis.ai) to implement core AI capabilities.
-- Implement a multi-turn conversation using Dialogs.
-- Handle user interruptions for such things as `Help` or `Cancel`.
-- Prompt for and validate requests for information from the user.
-"""
 from http import HTTPStatus
 
 from aiohttp import web

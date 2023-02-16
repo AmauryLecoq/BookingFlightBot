@@ -26,16 +26,6 @@ if (azure_luis_version != "0.7.0"):
     exit()
 
 
-
-def get_grandchild_id(model, childName, grandChildName):
-    
-    theseChildren = next(filter((lambda child: child.name == childName), model.children))
-    theseGrandchildren = next(filter((lambda child: child.name == grandChildName), theseChildren.children))
-    
-    grandChildId = theseGrandchildren.id
-    
-    return grandChildId
-
 def get_turn_entities(data, index, ls_entities):
     luis_data = []
     for conversation in data["turns"][index]:
